@@ -7,6 +7,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -31,10 +32,14 @@ class ExcelParserTest {
 
     @Test
     public void testReadCorrectNumberOfLines() {
-        List<String> rows = excelParser.parse(sheet);
+        List<Row> rows = excelParser.parse(sheet);
         assertEquals(8, rows.size());
     }
 
     @Test
-    public void testReadUniqueDaysLines(){}
+    public void testReadUniqueDayLines(){
+        List<Row> rows = excelParser.parse(sheet);
+        Map<String, List<Row>> realDays = excelParser.getRealDays(rows);
+        assertEquals(7, realDays.size());
+    }
 }

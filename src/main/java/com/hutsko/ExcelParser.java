@@ -6,9 +6,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 public class ExcelParser {
     public static final String ROW_NAME = "программирование";
@@ -44,40 +42,50 @@ public class ExcelParser {
         return sheet;
     }
 
-    List<String> parse(Sheet sheet) {
-        List<String> lines = new ArrayList<>();
+    List<Row> parse(Sheet sheet) {
+        List<Row> rows = new ArrayList<>();
         Iterator<Row> rowIterator = sheet.rowIterator();
-//        StringBuilder result = new StringBuilder();
         while (rowIterator.hasNext()) {
             Row row = rowIterator.next();
             Iterator<Cell> cellIterator = row.cellIterator();
+            rows.add(row);
+
             StringBuilder currentLine = new StringBuilder();
             while (cellIterator.hasNext()) {
-                Cell cell = cellIterator.next();
-                CellType cellType = cell.getCellType();
-                switch (cellType) {
-                    case BLANK:
-//                        result.append("(-)");
-                        currentLine.append("(-)");
-                        break;
-                    case STRING:
-//                        result.append(cell.getStringCellValue());
-                        currentLine.append(cell.getStringCellValue());
-                        break;
-                    case NUMERIC:
-//                        result.append(cell.getNumericCellValue());
-                        currentLine.append(cell.getNumericCellValue());
-                        break;
-                }
+                processCell(cellIterator, currentLine);
             }
-            lines.add(currentLine.toString());
 
 //            result.append("\n");
 //            if (row.getCell(2).equals(ROW_NAME)) {
 //                System.out.println(row.getCell(0));
 //            }
         }
-//        System.out.println(result.toString());
-        return lines;
+        return rows;
+    }
+
+    public Map<String, List<Row>> getRealDays(List<Row> rowList) {
+        String day;
+        Map<String, List<Row>> days = new HashMap<>();
+        for (int i = 0; i < rowList.size(); i++) {
+            Iterator<Cell> cell = rowList.get(i).cellIterator();
+
+        }
+        return null;
+    }
+
+    void processCell(Iterator<Cell> cellIterator, StringBuilder currentLine) {
+        Cell cell = cellIterator.next();
+        CellType cellType = cell.getCellType();
+        switch (cellType) {
+            case BLANK:
+                currentLine.append("(-)");
+                break;
+            case STRING:
+                currentLine.append(cell.getStringCellValue());
+                break;
+            case NUMERIC:
+                currentLine.append(cell.getNumericCellValue());
+                break;
+        }
     }
 }
