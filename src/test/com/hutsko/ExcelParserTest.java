@@ -6,10 +6,12 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class ExcelParserTest {
     private static final String PATH_TEST_SHEET = "src/test/resources/testsheet.xlsx";
@@ -24,6 +26,7 @@ class ExcelParserTest {
         sheet = excelParser.readSheet(SHEET_NAME);
 
     }
+
     @AfterEach
     void tearDown() {
         excelParser = null;
@@ -37,9 +40,19 @@ class ExcelParserTest {
     }
 
     @Test
-    public void testReadUniqueDayLines(){
+    public void testGetAllDays() {
         List<Row> rows = excelParser.parse(sheet);
-        Map<String, List<Row>> realDays = excelParser.getRealDays(rows);
+        Map<String, List<Row>> realDays = excelParser.getAllDays(rows);
         assertEquals(7, realDays.size());
+    }
+
+    @Test
+    public void testParseDate() {
+
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("d,mm,yy");
+        String timeOne = "1,12,18";
+
+        assertEquals(LocalDate.of(2018, 12, 1), excelParser.parseDate(timeOne));
+        System.out.println(timeOne);
     }
 }

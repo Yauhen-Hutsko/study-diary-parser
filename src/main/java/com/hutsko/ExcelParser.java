@@ -3,10 +3,14 @@ package com.hutsko;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatterBuilder;
 import java.util.*;
+import java.util.regex.Pattern;
 
 public class ExcelParser {
     public static final String ROW_NAME = "программирование";
@@ -34,7 +38,7 @@ public class ExcelParser {
             sheet = wb.getSheet(name);
             int lastRow = sheet.getLastRowNum();
             System.out.println("\033[33m\033[1m sheetCounter: " + sheetCounter);
-            System.out.println(" lastRow: " + lastRow);
+            System.out.println(" Last row number: " + lastRow);
             System.out.print("\033[0m");
         } catch (IOException e) {
             e.printStackTrace();
@@ -63,14 +67,22 @@ public class ExcelParser {
         return rows;
     }
 
-    public Map<String, List<Row>> getRealDays(List<Row> rowList) {
-        String day;
+    public Map<String, List<Row>> getAllDays(List<Row> rowList) {
+        String previousDay = "";
         Map<String, List<Row>> days = new HashMap<>();
-        for (int i = 0; i < rowList.size(); i++) {
-            Iterator<Cell> cell = rowList.get(i).cellIterator();
+        List<Row> activities = new ArrayList<>();
 
+        for (int i = 0; i < rowList.size(); i++) {
+            Row currentRow = rowList.get(i);
+            previousDay = currentRow.getCell(0) != null ? currentRow.getCell(0).toString() : previousDay;
+
+            if (currentRow.getCell(1) != null) {
+                activities.clear();
+            }
+            activities.add(currentRow);
+            days.put(previousDay, activities);
         }
-        return null;
+        return days;
     }
 
     void processCell(Iterator<Cell> cellIterator, StringBuilder currentLine) {
@@ -87,5 +99,17 @@ public class ExcelParser {
                 currentLine.append(cell.getNumericCellValue());
                 break;
         }
+    }
+
+    public Date parseDate(String dateString) {
+        SimpleDateFormat format = new SimpleDateFormat("dd,MM,yyyy");
+        Date date = null;
+        try {
+            date = format.parse(dateString);
+
+        } catch (ParseException e) {
+            System.err.println("Cannot be parsed: " + dateString);
+        }
+        return date;
     }
 }
