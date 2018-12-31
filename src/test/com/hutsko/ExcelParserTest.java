@@ -10,7 +10,6 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -41,13 +40,13 @@ class ExcelParserTest {
 
     @Test
     public void testReadCorrectNumberOfLines() {
-        List<Row> rows = excelParser.parse(sheet);
+        List<Row> rows = excelParser.getRows(sheet);
         assertEquals(8, rows.size());
     }
     @Test
     public void testGetAllDays() {
-        List<Row> rows = excelParser.parse(sheet);
-        Map<String, List<Row>> realDays = excelParser.getAllDays(rows);
+        List<Row> rows = excelParser.getRows(sheet);
+        Map<LocalDate, List<Row>> realDays = excelParser.getAllDays(rows);
         assertEquals(7, realDays.size());
     }
     @Test

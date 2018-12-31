@@ -24,7 +24,7 @@ public class ExcelParser {
     public static void main(String[] args) {
         ExcelParser ep = new ExcelParser(PATH_FILE);
         Sheet sheet = ep.readSheet(SHEET_NAME);
-        ep.parse(sheet);
+        ep.getRows(sheet);
     }
 
     Sheet readSheet(String name) {
@@ -44,7 +44,8 @@ public class ExcelParser {
         return sheet;
     }
 
-    List<Row> parse(Sheet sheet) {
+    //todo: maybe better conflate this method with getAllDays() .
+    List<Row> getRows(Sheet sheet) {
         List<Row> rows = new ArrayList<>();
         Iterator<Row> rowIterator = sheet.rowIterator();
         while (rowIterator.hasNext()) {
@@ -64,15 +65,18 @@ public class ExcelParser {
         }
         return rows;
     }
-
-    Map<String, List<Row>> getAllDays(List<Row> rowList) {
-        String previousDay = "";
-        Map<String, List<Row>> days = new HashMap<>();
+    /**
+     * Some days contain multi-tuple of activities. Therefore "unique days" ≤ "max lines"
+     * @return HashMap where key - string of day, value - list of tuples.
+     */
+    Map<LocalDate, List<Row>> getAllDays(List<Row> rowList) {
+        LocalDate previousDay = LocalDate.now();
+        Map<LocalDate, List<Row>> days = new HashMap<>();
         List<Row> activities = new ArrayList<>();
 
         for (int i = 0; i < rowList.size(); i++) {
             Row currentRow = rowList.get(i);
-            previousDay = currentRow.getCell(0) != null ? currentRow.getCell(0).toString() : previousDay;
+            previousDay = currentRow.getCell(0) != null ? parseDate(currentRow.getCell(0).toString()) : previousDay;
 
             if (currentRow.getCell(1) != null) {
                 activities.clear();
@@ -114,11 +118,9 @@ public class ExcelParser {
         String hourPatternEng = "h[a-zA-Z]{3,4}+|ч[а-яА-Я]{0,4}+";
         // delete spaces from string
         String duration = rawDuration.replace(" ", "").trim();
-        // truncate words to "h" and "m"
+        // change data format like "{"1час 15 мин"} -> "1h15m"
         duration = duration.replaceAll(minutePatternEng, "m");
         duration = duration.replaceAll(hourPatternEng, "h");
-
-        // replace all russian symbols by english "h" and "m"
     return duration;
     }
 }

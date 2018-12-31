@@ -2,7 +2,12 @@
 
 + read correct line of numbers
 + collect unique days
-+ convert string into LocalDate
++ convert date into LocalDate
 - parse only needed cells from line (3 columns)
 - get rid of repeatable code
 - create variable "tupleCounter" in ExcelParser.java and initialize it in method parse
+- create entity-class for activities
+- throw exception from parseTime()
+- test variable previousDay
+- skip empty daily activities
+
