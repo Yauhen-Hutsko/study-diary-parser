@@ -4,13 +4,11 @@ import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.*;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.time.Duration;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatterBuilder;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.*;
-import java.util.regex.Pattern;
 
 public class ExcelParser {
     public static final String ROW_NAME = "программирование";
@@ -67,7 +65,7 @@ public class ExcelParser {
         return rows;
     }
 
-    public Map<String, List<Row>> getAllDays(List<Row> rowList) {
+    Map<String, List<Row>> getAllDays(List<Row> rowList) {
         String previousDay = "";
         Map<String, List<Row>> days = new HashMap<>();
         List<Row> activities = new ArrayList<>();
@@ -101,15 +99,26 @@ public class ExcelParser {
         }
     }
 
-    public Date parseDate(String dateString) {
-        SimpleDateFormat format = new SimpleDateFormat("dd,MM,yyyy");
-        Date date = null;
-        try {
-            date = format.parse(dateString);
+    LocalDate parseDate(String dateString) throws DateTimeParseException {
+        DateTimeFormatter format = DateTimeFormatter.ofPattern("d,M,yy");
+        //The returned date has the format "yyyy-MM-dd" (ISO_DATE)
+        return LocalDate.parse(dateString, format);
+    }
 
-        } catch (ParseException e) {
-            System.err.println("Cannot be parsed: " + dateString);
-        }
-        return date;
+    Duration getDuration(String string){
+     return null;
+    }
+
+    String prepareTimeFormat(String rawDuration){
+        String minutePatternEng = "m[a-zA-Z]{2,6}+|м[а-яА-Я]{0,4}+";
+        String hourPatternEng = "h[a-zA-Z]{3,4}+|ч[а-яА-Я]{0,4}+";
+        // delete spaces from string
+        String duration = rawDuration.replace(" ", "").trim();
+        // truncate words to "h" and "m"
+        duration = duration.replaceAll(minutePatternEng, "m");
+        duration = duration.replaceAll(hourPatternEng, "h");
+
+        // replace all russian symbols by english "h" and "m"
+    return duration;
     }
 }
