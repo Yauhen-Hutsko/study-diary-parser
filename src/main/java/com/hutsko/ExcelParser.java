@@ -1,14 +1,18 @@
 package com.hutsko;
 
+import com.hutsko.entity.Duration;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
-import java.io.*;
-import java.time.Duration;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class ExcelParser {
     public static final String ROW_NAME = "программирование";
@@ -65,8 +69,10 @@ public class ExcelParser {
         }
         return rows;
     }
+
     /**
      * Some days contain multi-tuple of activities. Therefore "unique days" ≤ "max lines"
+     *
      * @return HashMap where key - string of day, value - list of tuples.
      */
     Map<LocalDate, List<Row>> getAllDays(List<Row> rowList) {
@@ -109,11 +115,7 @@ public class ExcelParser {
         return LocalDate.parse(dateString, format);
     }
 
-    Duration getDuration(String string){
-     return null;
-    }
-
-    String prepareTimeFormat(String rawDuration){
+    String prepareTimeFormat(String rawDuration) {
         String minutePatternEng = "m[a-zA-Z]{2,6}+|м[а-яА-Я]{0,4}+";
         String hourPatternEng = "h[a-zA-Z]{3,4}+|ч[а-яА-Я]{0,4}+";
         // delete spaces from string
@@ -121,6 +123,24 @@ public class ExcelParser {
         // change data format like "{"1час 15 мин"} -> "1h15m"
         duration = duration.replaceAll(minutePatternEng, "m");
         duration = duration.replaceAll(hourPatternEng, "h");
-    return duration;
+        return duration;
+    }
+
+    //todo: simplify regexps
+    Duration getDuration(String dur) {
+        int hour;
+        int minute;
+
+        //Catch up to 2 first digits in string like "10h30m"
+        Pattern hourPattern = Pattern.compile("(?=^\\d{1,2}h)\\d+");
+        //Catch up to 2 digits between "h" and "m" in string like "10h30m"
+        Pattern minutePattern = Pattern.compile("(?=\\d{1,2}m)(?<=h?)\\d{1,2}");
+        Matcher hourMatcher = hourPattern.matcher(dur);
+        Matcher minuteMatcher = minutePattern.matcher(dur);
+
+        hour = (hourMatcher.matches()) ? Integer.parseInt(hourMatcher.group()) : 0;
+        minute = (minuteMatcher.matches()) ? Integer.parseInt(minuteMatcher.group()) : 0;
+
+        return new Duration(hour, minute);
     }
 }

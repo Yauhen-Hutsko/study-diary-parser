@@ -1,5 +1,6 @@
 package com.hutsko;
 
+import com.hutsko.entity.Duration;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.junit.jupiter.api.AfterEach;
@@ -15,7 +16,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class ExcelParserTest {
@@ -43,12 +43,14 @@ class ExcelParserTest {
         List<Row> rows = excelParser.getRows(sheet);
         assertEquals(8, rows.size());
     }
+
     @Test
     public void testGetAllDays() {
         List<Row> rows = excelParser.getRows(sheet);
         Map<LocalDate, List<Row>> realDays = excelParser.getAllDays(rows);
         assertEquals(7, realDays.size());
     }
+
     @Test
     public void testParseDatePositive() {
         String time1 = "1,12,18";
@@ -64,6 +66,7 @@ class ExcelParserTest {
         System.out.println(excelParser.parseDate(time2));
         System.out.println(excelParser.parseDate(time3).format(DateTimeFormatter.BASIC_ISO_DATE));
     }
+
     @Test
     public void testParseDateNegative() {
         String time1 = "1.12.18";
@@ -75,17 +78,29 @@ class ExcelParserTest {
         assertThrows(DateTimeParseException.class, () -> assertEquals(LocalDate.of(2018, 12, 1), excelParser.parseDate(time3)));
         assertThrows(DateTimeParseException.class, () -> assertEquals(LocalDate.of(2018, 8, 23), excelParser.parseDate(time4)));
     }
+
     @Test
-    public void testGetDuration(){
-        List<String> list = Arrays.asList("30m", "2h", "55m", "30m", "4h55m", "30m", "4h20m", "1h50m");
-//        assertEquals();
+    public void testGetDurationPositive() {
+        String one = "30m";
+        String two = "4h15m";
+        String three = "12h50m";
+        String four = "3h";
+        Duration dur1 = excelParser.getDuration(one);
+        assertEquals(one, dur1);
+        Duration dur2 = excelParser.getDuration(two);
+        assertEquals(two, dur2);
+        Duration dur3 = excelParser.getDuration(three);
+        assertEquals(three, dur3);
+        Duration dur4 = excelParser.getDuration(four);
+        assertEquals(four, dur4);
     }
 
-    public void testGetDurationNegative(){
+    public void testGetDurationNegative() {
 //        1h, 1hour, 1 h, 1 hour
     }
+
     @Test
-    public void testPrepareTimeFormatRU(){
+    public void testPrepareTimeFormatRU() {
         List<String> ruList = Arrays.asList(
                 "10м", "10минут", "10мин", "20 м", "20 минут", "20 мин",
                 "1ч", "2часа", "5часов", "1 час", "2 часа", "5 часов",
@@ -100,8 +115,9 @@ class ExcelParserTest {
 
         assertEquals(expectedList, actualList);
     }
+
     @Test
-    public void testPrepareTimeFormatEng(){
+    public void testPrepareTimeFormatEng() {
         List<String> engList = Arrays.asList(
                 "10m", "10min", "10minutes", "10mins", "20 m", "20 min", "20 minutes", "20 mins",
                 "1h", "2hours", "5hours", "1 hour", "2 hours",
