@@ -86,13 +86,13 @@ class ExcelParserTest {
         String three = "12h50m";
         String four = "3h";
         Duration dur1 = excelParser.getDuration(one);
-        assertEquals(one, dur1);
+        assertEquals("30m", dur1.toString());
         Duration dur2 = excelParser.getDuration(two);
-        assertEquals(two, dur2);
+        assertEquals("4h 15m", dur2.toString());
         Duration dur3 = excelParser.getDuration(three);
-        assertEquals(three, dur3);
+        assertEquals("12h 50m", dur3.toString());
         Duration dur4 = excelParser.getDuration(four);
-        assertEquals(four, dur4);
+        assertEquals("3h", dur4.toString());
     }
 
     public void testGetDurationNegative() {

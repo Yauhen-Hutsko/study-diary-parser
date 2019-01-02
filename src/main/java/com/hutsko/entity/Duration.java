@@ -18,6 +18,6 @@ public class Duration {
 
     @Override
     public String toString() {
-        return hours + "." + minutes;
+        return (((hours !=0)? hours + "h ":"") + ((minutes != 0)? minutes + "m":"")).trim();
     }
 }

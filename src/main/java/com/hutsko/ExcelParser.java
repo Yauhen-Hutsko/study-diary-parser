@@ -138,8 +138,8 @@ public class ExcelParser {
         Matcher hourMatcher = hourPattern.matcher(dur);
         Matcher minuteMatcher = minutePattern.matcher(dur);
 
-        hour = (hourMatcher.matches()) ? Integer.parseInt(hourMatcher.group()) : 0;
-        minute = (minuteMatcher.matches()) ? Integer.parseInt(minuteMatcher.group()) : 0;
+        hour = (hourMatcher.find()) ? Integer.parseInt(dur.substring(hourMatcher.start(), hourMatcher.end())) : 0;
+        minute = (minuteMatcher.find()) ? Integer.parseInt(dur.substring(minuteMatcher.start(),minuteMatcher.end())) : 0;
 
         return new Duration(hour, minute);
     }
