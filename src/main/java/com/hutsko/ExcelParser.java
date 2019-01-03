@@ -129,7 +129,7 @@ public class ExcelParser {
     Duration getDuration(String dur) {
         //check for correct input format like "XXhYYm"
         if (!dur.matches("\\d{1,2}h[0-6]?\\d{1}m")) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("Wrong input string format: " + dur);
         }
 
         //Catch up to 2 first digits in string like "10h30m"

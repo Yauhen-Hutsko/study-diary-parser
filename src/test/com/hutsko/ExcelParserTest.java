@@ -15,9 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 class ExcelParserTest {
     private static final String PATH_TEST_SHEET = "src/test/resources/testsheet.xlsx";
@@ -44,14 +42,12 @@ class ExcelParserTest {
         List<Row> rows = excelParser.getRows(sheet);
         assertEquals(8, rows.size());
     }
-
     @Test
     public void testGetAllDays() {
         List<Row> rows = excelParser.getRows(sheet);
         Map<LocalDate, List<Row>> realDays = excelParser.getAllDays(rows);
         assertEquals(7, realDays.size());
     }
-
     @Test
     public void testParseDatePositive() {
         String time1 = "1,12,18";
@@ -67,7 +63,6 @@ class ExcelParserTest {
         System.out.println(excelParser.parseDate(time2));
         System.out.println(excelParser.parseDate(time3).format(DateTimeFormatter.BASIC_ISO_DATE));
     }
-
     @Test
     public void testParseDateNegative() {
         String time1 = "1.12.18";
@@ -79,7 +74,6 @@ class ExcelParserTest {
         assertThrows(DateTimeParseException.class, () -> assertEquals(LocalDate.of(2018, 12, 1), excelParser.parseDate(time3)));
         assertThrows(DateTimeParseException.class, () -> assertEquals(LocalDate.of(2018, 8, 23), excelParser.parseDate(time4)));
     }
-
     @Test
     public void testGetDurationPositive() {
         String one = "0h30m";
@@ -107,7 +101,6 @@ class ExcelParserTest {
         assertThrows(IllegalArgumentException.class,() -> excelParser.getDuration(six));
 
     }
-
     @Test
     public void testPrepareTimeFormatRU() {
         List<String> ruList = Arrays.asList(
@@ -124,7 +117,6 @@ class ExcelParserTest {
 
         assertEquals(expectedList, actualList);
     }
-
     @Test
     public void testPrepareTimeFormatEng() {
         List<String> engList = Arrays.asList(
@@ -140,4 +132,20 @@ class ExcelParserTest {
 
         assertEquals(expectedList, actualList);
     }
+    @Test
+    public void testSumOfDurationPositive(){
+        Duration one = new Duration(0,20);
+        Duration two = new Duration(0,15);
+        Duration three = new Duration(11,45);
+        Duration four = new Duration(4,40);
+        // a(named augend) + b(named addend) = c
+        Duration augend = new Duration(0,0);
+        Duration expected = new Duration(17,0);
+        Duration actual = augend.add(one).add(two).add(three).add(four);
+        assertEquals(expected, actual);
+        assertEquals(new Duration(12, 5), one.add(three));
+        assertEquals(new Duration(16, 25), three.add(four));
+    }
+
+
 }
