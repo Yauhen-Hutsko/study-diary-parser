@@ -3,13 +3,14 @@
 + read correct line of numbers
 + collect unique days
 + convert date into LocalDate
++ throw exception from parseTime()
++ test bad scenarios for getDuration()
++ implement addition of duration
 - parse only needed cells from line (3 columns)
+- change return value of getAllDays() to Map<LocalDate, List<Activity>>
 - get rid of repeatable code
 - create variable "tupleCounter" in ExcelParser.java and initialize it in method parse
 - create entity-class for activities
-- throw exception from parseTime()
 - test variable previousDay
 - skip empty daily activities
-+ test bad scenarios for getDuration()
-+ implement addition of duration
 - check todo's

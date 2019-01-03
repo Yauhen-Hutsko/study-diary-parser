@@ -75,30 +75,30 @@ class ExcelParserTest {
         assertThrows(DateTimeParseException.class, () -> assertEquals(LocalDate.of(2018, 8, 23), excelParser.parseDate(time4)));
     }
     @Test
-    public void testGetDurationPositive() {
+    public void testParseDurationPositive() {
         String one = "0h30m";
         String two = "4h15m";
         String three = "12h50m";
         String four = "3h0m";
-        assertEquals("30m", excelParser.getDuration(one).toString());
-        assertEquals("4h 15m", excelParser.getDuration(two).toString());
-        assertEquals("12h 50m", excelParser.getDuration(three).toString());
-        assertEquals("3h", excelParser.getDuration(four).toString());
+        assertEquals("30m", excelParser.parseDuration(one).toString());
+        assertEquals("4h 15m", excelParser.parseDuration(two).toString());
+        assertEquals("12h 50m", excelParser.parseDuration(three).toString());
+        assertEquals("3h", excelParser.parseDuration(four).toString());
     }
     @Test
-    public void testGetDurationNegative() {
+    public void testParseDurationNegative() {
         String one = "3hour";
         String two = "1h85m";
         String three = "3u";
         String four = "3ч";
         String five = "2h20h";
         String six = "4m40m";
-        assertThrows(IllegalArgumentException.class,() -> excelParser.getDuration(one));
-        assertThrows(IllegalArgumentException.class,() -> excelParser.getDuration(two));
-        assertThrows(IllegalArgumentException.class,() -> excelParser.getDuration(three));
-        assertThrows(IllegalArgumentException.class,() -> excelParser.getDuration(four));
-        assertThrows(IllegalArgumentException.class,() -> excelParser.getDuration(five));
-        assertThrows(IllegalArgumentException.class,() -> excelParser.getDuration(six));
+        assertThrows(IllegalArgumentException.class,() -> excelParser.parseDuration(one));
+        assertThrows(IllegalArgumentException.class,() -> excelParser.parseDuration(two));
+        assertThrows(IllegalArgumentException.class,() -> excelParser.parseDuration(three));
+        assertThrows(IllegalArgumentException.class,() -> excelParser.parseDuration(four));
+        assertThrows(IllegalArgumentException.class,() -> excelParser.parseDuration(five));
+        assertThrows(IllegalArgumentException.class,() -> excelParser.parseDuration(six));
 
     }
     @Test

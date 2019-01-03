@@ -1,7 +1,9 @@
 package com.hutsko;
 
 import com.hutsko.entity.Duration;
+import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.FileInputStream;
@@ -80,8 +82,10 @@ public class ExcelParser {
         Map<LocalDate, List<Row>> days = new HashMap<>();
         List<Row> activities = new ArrayList<>();
 
-        for (int i = 0; i < rowList.size(); i++) {
-            Row currentRow = rowList.get(i);
+        for (Row currentRow : rowList) {
+//1. read cells and process them
+//2. populate entities with data from the cells.
+
             previousDay = currentRow.getCell(0) != null ? parseDate(currentRow.getCell(0).toString()) : previousDay;
 
             if (currentRow.getCell(1) != null) {
@@ -93,7 +97,7 @@ public class ExcelParser {
         return days;
     }
 
-    void processCell(Iterator<Cell> cellIterator, StringBuilder currentLine) {
+    private void processCell(Iterator<Cell> cellIterator, StringBuilder currentLine) {
         Cell cell = cellIterator.next();
         CellType cellType = cell.getCellType();
         switch (cellType) {
@@ -126,7 +130,7 @@ public class ExcelParser {
         return duration;
     }
 
-    Duration getDuration(String dur) {
+    Duration parseDuration(String dur) {
         //check for correct input format like "XXhYYm"
         if (!dur.matches("\\d{1,2}h[0-6]?\\d{1}m")) {
             throw new IllegalArgumentException("Wrong input string format: " + dur);
