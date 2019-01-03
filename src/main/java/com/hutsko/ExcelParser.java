@@ -126,7 +126,6 @@ public class ExcelParser {
         return duration;
     }
 
-    //todo: simplify regexps
     Duration getDuration(String dur) {
         //check for correct input format like "XXhYYm"
         if (!dur.matches("\\d{1,2}h[0-6]?\\d{1}m")) {
@@ -134,9 +133,9 @@ public class ExcelParser {
         }
 
         //Catch up to 2 first digits in string like "10h30m"
-        Pattern hourPattern = Pattern.compile("(?=^\\d{1,2}h)\\d+");
+        Pattern hourPattern = Pattern.compile("\\d+(?=h)");
         //Catch up to 2 digits between "h" and "m" in string like "10h30m"
-        Pattern minutePattern = Pattern.compile("(?=\\d{1,2}m)(?<=h?)\\d{1,2}");
+        Pattern minutePattern = Pattern.compile("\\d+(?=m)");
         Matcher hourMatcher = hourPattern.matcher(dur);
         Matcher minuteMatcher = minutePattern.matcher(dur);
 
