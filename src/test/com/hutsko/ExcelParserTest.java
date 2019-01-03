@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class ExcelParserTest {
@@ -81,22 +82,30 @@ class ExcelParserTest {
 
     @Test
     public void testGetDurationPositive() {
-        String one = "30m";
+        String one = "0h30m";
         String two = "4h15m";
         String three = "12h50m";
-        String four = "3h";
-        Duration dur1 = excelParser.getDuration(one);
-        assertEquals("30m", dur1.toString());
-        Duration dur2 = excelParser.getDuration(two);
-        assertEquals("4h 15m", dur2.toString());
-        Duration dur3 = excelParser.getDuration(three);
-        assertEquals("12h 50m", dur3.toString());
-        Duration dur4 = excelParser.getDuration(four);
-        assertEquals("3h", dur4.toString());
+        String four = "3h0m";
+        assertEquals("30m", excelParser.getDuration(one).toString());
+        assertEquals("4h 15m", excelParser.getDuration(two).toString());
+        assertEquals("12h 50m", excelParser.getDuration(three).toString());
+        assertEquals("3h", excelParser.getDuration(four).toString());
     }
-
+    @Test
     public void testGetDurationNegative() {
-//        1h, 1hour, 1 h, 1 hour
+        String one = "3hour";
+        String two = "1h85m";
+        String three = "3u";
+        String four = "3ч";
+        String five = "2h20h";
+        String six = "4m40m";
+        assertThrows(IllegalArgumentException.class,() -> excelParser.getDuration(one));
+        assertThrows(IllegalArgumentException.class,() -> excelParser.getDuration(two));
+        assertThrows(IllegalArgumentException.class,() -> excelParser.getDuration(three));
+        assertThrows(IllegalArgumentException.class,() -> excelParser.getDuration(four));
+        assertThrows(IllegalArgumentException.class,() -> excelParser.getDuration(five));
+        assertThrows(IllegalArgumentException.class,() -> excelParser.getDuration(six));
+
     }
 
     @Test

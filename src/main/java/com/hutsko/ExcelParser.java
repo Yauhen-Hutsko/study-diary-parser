@@ -128,8 +128,10 @@ public class ExcelParser {
 
     //todo: simplify regexps
     Duration getDuration(String dur) {
-        int hour;
-        int minute;
+        //check for correct input format like "XXhYYm"
+        if (!dur.matches("\\d{1,2}h[0-6]?\\d{1}m")) {
+            throw new IllegalArgumentException();
+        }
 
         //Catch up to 2 first digits in string like "10h30m"
         Pattern hourPattern = Pattern.compile("(?=^\\d{1,2}h)\\d+");
@@ -138,8 +140,8 @@ public class ExcelParser {
         Matcher hourMatcher = hourPattern.matcher(dur);
         Matcher minuteMatcher = minutePattern.matcher(dur);
 
-        hour = (hourMatcher.find()) ? Integer.parseInt(dur.substring(hourMatcher.start(), hourMatcher.end())) : 0;
-        minute = (minuteMatcher.find()) ? Integer.parseInt(dur.substring(minuteMatcher.start(),minuteMatcher.end())) : 0;
+        int hour = (hourMatcher.find()) ? Integer.parseInt(dur.substring(hourMatcher.start(), hourMatcher.end())) : 0;
+        int minute = (minuteMatcher.find()) ? Integer.parseInt(dur.substring(minuteMatcher.start(),minuteMatcher.end())) : 0;
 
         return new Duration(hour, minute);
     }

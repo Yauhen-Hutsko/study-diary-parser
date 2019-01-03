@@ -10,4 +10,6 @@
 - throw exception from parseTime()
 - test variable previousDay
 - skip empty daily activities
-
++ test bad scenarios for getDuration()
+- implement addition of duration
+- check todo's
