@@ -40,13 +40,13 @@ class ExcelParserTest {
 
     @Test
     public void testReadCorrectNumberOfLines() {
-        List<Row> rows = excelParser.getRows(sheet);
-        assertEquals(8, rows.size());
+        excelParser.getAllDays(sheet);
+        int num = excelParser.getRowCounter();
+        assertEquals(8, num);
     }
     @Test
     public void testGetAllDays() {
-        List<Row> rows = excelParser.getRows(sheet);
-        Map<LocalDate, List<Row>> realDays = excelParser.getAllDays(rows);
+        Map<LocalDate, List<Activity>> realDays = excelParser.getAllDays(sheet);
         assertEquals(7, realDays.size());
     }
     @Test
@@ -149,9 +149,9 @@ class ExcelParserTest {
     }
     @Test
     public void testGetActivityFromRow(){
-        Row row = excelParser.getRows(sheet).get(0);
-        Row row5 = excelParser.getRows(sheet).get(5);
-        Row row6 = excelParser.getRows(sheet).get(6);
+        Row row = sheet.getRow(0);
+        Row row5 = sheet.getRow(5);
+        Row row6 = sheet.getRow(6);
         Activity activity = excelParser.getActivity(row);
         assertNotNull(activity);
 

@@ -25,15 +25,10 @@ public class ExcelParser {
     private static final int TIME_CELL_NUMBER = 5;
 
     private String pathFile;
+    private static int rowCounter;
 
     public ExcelParser(String pathFile) {
         this.pathFile = pathFile;
-    }
-
-    public static void main(String[] args) {
-        ExcelParser ep = new ExcelParser(PATH_FILE);
-        Sheet sheet = ep.readSheet(SHEET_NAME);
-        ep.getRows(sheet);
     }
 
     Sheet readSheet(String name) {
@@ -53,46 +48,32 @@ public class ExcelParser {
         return sheet;
     }
 
-    //todo: maybe better conflate this method with getAllDays() .
-    List<Row> getRows(Sheet sheet) {
-        List<Row> rows = new ArrayList<>();
-        Iterator<Row> rowIterator = sheet.rowIterator();
-        while (rowIterator.hasNext()) {
-            Row row = rowIterator.next();
-            Iterator<Cell> cellIterator = row.cellIterator();
-            rows.add(row);
-
-            StringBuilder currentLine = new StringBuilder();
-            while (cellIterator.hasNext()) {
-                processCell(cellIterator, currentLine);
-            }
-        }
-        return rows;
-    }
-
     /**
      * This is a main method which return data prepared for UI.
      * Some days contain multi-tuple of activities. Therefore "unique days" ≤ "max lines"
      *
      * @return HashMap where key - day, value - list of activities.
      */
-    Map<LocalDate, List<Row>> getAllDays(List<Row> rowList) {
+    Map<LocalDate, List<Activity>> getAllDays(Sheet sheet) {
+        Iterator<Row> rowIterator = sheet.rowIterator();
+        Map<LocalDate, List<Activity>> days = new HashMap<>();
+        List<Activity> activities = new ArrayList<>();
         LocalDate previousDay = LocalDate.now();
-        Map<LocalDate, List<Row>> days = new HashMap<>();
-        List<Row> activities = new ArrayList<>();
 
-        for (Row currentRow : rowList) {
-//1. read cells and process them
-//2. populate entities with data from the cells.
-
+        while (rowIterator.hasNext()) {
+            rowCounter++;
+            Row currentRow = rowIterator.next();
             previousDay = currentRow.getCell(DATE_CELL_NUMBER) != null ?
                     parseDate(currentRow.getCell(DATE_CELL_NUMBER).toString()) : previousDay;
-
+            // in this case "activity" will be placed under a new day. Otherwise to the previous one.
             if (currentRow.getCell(DATE_CELL_NUMBER) != null) {
                 activities.clear();
             }
-            activities.add(currentRow);
-            days.put(previousDay, activities);
+            if (currentRow.getCell(ACTIVITY_CELL_NUMBER) != null && currentRow.getCell(TIME_CELL_NUMBER) != null) {
+                //populate entities with data from the cells.
+                activities.add(getActivity(currentRow));
+                days.put(previousDay, activities);
+            }
         }
         return days;
     }
@@ -155,13 +136,17 @@ public class ExcelParser {
         return new Duration(hour, minute);
     }
 
-    public Activity getActivity(Row row) {
+    Activity getActivity(Row row) {
         String name = row.getCell(ACTIVITY_CELL_NUMBER).getStringCellValue();
 
         //this check will throw an exception in case of unknown activity
         ActivityType.forString(name);
 
-        Duration time = parseDuration( prepareTimeFormat(row.getCell(TIME_CELL_NUMBER).getStringCellValue()) );
+        Duration time = parseDuration(prepareTimeFormat(row.getCell(TIME_CELL_NUMBER).getStringCellValue()));
         return new Activity(name, time);
+    }
+
+    public int getRowCounter() {
+        return rowCounter;
     }
 }
