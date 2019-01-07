@@ -18,14 +18,13 @@ import java.util.regex.Pattern;
 
 public class ExcelParser {
     public static final String ROW_NAME = "программирование";
-    private static final String PATH_FILE = "src/main/resources/ItLearnTimeWasted.xlsx";
-    private static final String SHEET_NAME = "Schedule";
+    static final String PATH_FILE = "src/main/resources/ItLearnTimeWasted.xlsx";
+    static final String SHEET_NAME = "Schedule";
     private static final int DATE_CELL_NUMBER = 0;
     private static final int ACTIVITY_CELL_NUMBER = 2;
     private static final int TIME_CELL_NUMBER = 5;
-
-    private String pathFile;
     private static int rowCounter;
+    private String pathFile;
 
     public ExcelParser(String pathFile) {
         this.pathFile = pathFile;
@@ -60,24 +59,31 @@ public class ExcelParser {
         List<Activity> activities = new ArrayList<>();
         LocalDate previousDay = LocalDate.now();
 
-        while (rowIterator.hasNext()) {
-            rowCounter++;
-            Row currentRow = rowIterator.next();
-            previousDay = currentRow.getCell(DATE_CELL_NUMBER) != null ?
-                    parseDate(currentRow.getCell(DATE_CELL_NUMBER).toString()) : previousDay;
-            // in this case "activity" will be placed under a new day. Otherwise to the previous one.
-            if (currentRow.getCell(DATE_CELL_NUMBER) != null) {
-                activities.clear();
+        try {
+            while (rowIterator.hasNext()) {
+                rowCounter++;
+                Row currentRow = rowIterator.next();
+                previousDay = currentRow.getCell(DATE_CELL_NUMBER) != null ?
+                        parseDate(currentRow.getCell(DATE_CELL_NUMBER).toString()) : previousDay;
+                // in this case "activity" will be placed under a new day. Otherwise to the previous one.
+                if (currentRow.getCell(DATE_CELL_NUMBER) != null) {
+                    activities = new ArrayList<>();
+                }
+                if (currentRow.getCell(ACTIVITY_CELL_NUMBER) != null && currentRow.getCell(TIME_CELL_NUMBER) != null &&
+                        !currentRow.getCell(TIME_CELL_NUMBER).toString().equals("0")) {
+                    //populate entities with data from the cells.
+                    activities.add(getActivity(currentRow));
+                    days.put(previousDay, activities);
+                }
             }
-            if (currentRow.getCell(ACTIVITY_CELL_NUMBER) != null && currentRow.getCell(TIME_CELL_NUMBER) != null) {
-                //populate entities with data from the cells.
-                activities.add(getActivity(currentRow));
-                days.put(previousDay, activities);
-            }
+        } catch (Exception e) {
+            System.out.println("Error at line: " + rowCounter);
+            System.out.println(Arrays.toString(e.getStackTrace()));
         }
         return days;
     }
 
+    @Deprecated
     private void processCell(Iterator<Cell> cellIterator, StringBuilder currentLine) {
         Cell cell = cellIterator.next();
         CellType cellType = cell.getCellType();
@@ -108,6 +114,9 @@ public class ExcelParser {
         // change data format like "{"1час 15 мин"} -> "1h15m"
         duration = duration.replaceAll(minutePatternEng, "m");
         duration = duration.replaceAll(hourPatternEng, "h");
+        if (!duration.contains("h") && !duration.contains("m")) {
+            return "0h0m";
+        }
         if (!duration.contains("h")) {
             duration = "0h" + duration;
         }
@@ -137,16 +146,16 @@ public class ExcelParser {
     }
 
     Activity getActivity(Row row) {
-        String name = row.getCell(ACTIVITY_CELL_NUMBER).getStringCellValue();
+        String name = row.getCell(ACTIVITY_CELL_NUMBER).toString().trim();
 
         //this check will throw an exception in case of unknown activity
         ActivityType.forString(name);
 
-        Duration time = parseDuration(prepareTimeFormat(row.getCell(TIME_CELL_NUMBER).getStringCellValue()));
+        Duration time = parseDuration(prepareTimeFormat(row.getCell(TIME_CELL_NUMBER).toString()));
         return new Activity(name, time);
     }
 
-    public int getRowCounter() {
+    int getRowCounter() {
         return rowCounter;
     }
 }

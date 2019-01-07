@@ -163,5 +163,19 @@ class ExcelParserTest {
         assertEquals("программирование", activity6.getName() );
         assertEquals(new Duration(4, 20), activity6.getDuration());
     }
+    @Test
+    public void testActivityDurationAdd(){
+        Activity one = new Activity("1");
+        Activity two = new Activity("2", new Duration(2,15));
+        Duration dur = new Duration(1,50);
+        one.add(dur);
+        two.add(dur);
+
+        assertEquals(new Duration(1,50), one.getDuration() );
+        assertEquals(new Duration(4,5), two.getDuration() );
+        one.add(dur);
+        assertNotEquals(new Duration(1,50), one.getDuration() );
+
+    }
 
 }

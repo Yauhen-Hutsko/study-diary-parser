@@ -4,7 +4,12 @@ import java.util.Objects;
 
 public class Activity {
     private String name;
-    private Duration duration;
+    private Duration duration ;
+
+    public Activity(String name) {
+        this.name = name;
+        duration = new Duration(0,0);
+    }
 
     public Activity(String name, Duration duration) {
         this.name = name;
@@ -19,6 +24,10 @@ public class Activity {
         return duration;
     }
 
+    public void add(Duration duration){
+        this.duration.add(duration);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -31,5 +40,10 @@ public class Activity {
     @Override
     public int hashCode() {
         return Objects.hash(name, duration);
+    }
+
+    @Override
+    public String toString() {
+        return duration == null ? "Cannot be calculated" : duration.toString();
     }
 }

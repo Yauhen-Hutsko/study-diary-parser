@@ -2,9 +2,12 @@ package com.hutsko.entity;
 
 public enum ActivityType {
     PROGRAMMING("программирование"),
+    ENGLISH("английский"),
     MATH("математика"),
     READING("чтение"),
-    GUITAR("гитара");
+    GUITAR("гитара"),
+    CALLIGRAPHY("прописи"),
+    REST("отдых");
 
     ActivityType(String name) {
         this.name = name;
@@ -15,7 +18,6 @@ public enum ActivityType {
     @SuppressWarnings("UnusedReturnValue")
     public static ActivityType forString(String name) {
         ActivityType[] activityTypes = values();
-        int length = activityTypes.length;
 
         for (ActivityType type : activityTypes) {
             if (type.name.equals(name)) {

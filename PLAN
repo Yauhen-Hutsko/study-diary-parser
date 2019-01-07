@@ -10,9 +10,9 @@ TDD approach
 + parse only needed cells from line (3 columns)
 + make a check for empty cells(0,2,5)
 + change return value of getAllDays() to Map<LocalDate, List<Activity>>
-- create variable "tupleCounter" in ExcelParser.java and initialize it in method parse
-- test variable previousDay
++ create variable "rowCounter" in ExcelParser.java and initialize it in method parse
 + skip empty daily activities
++ check todo's
+- test variable previousDay
 - get rid of repeatable code
-- check todo's
 - change accessibility of methods
