@@ -6,12 +6,12 @@
 + throw exception from parseTime()
 + test bad scenarios for getDuration()
 + implement addition of duration
++ create entity-class for activities
 - parse only needed cells from line (3 columns)
+- make a check for empty cells(0,2,5)
 - change return value of getAllDays() to Map<LocalDate, List<Activity>>
-- get rid of repeatable code
 - create variable "tupleCounter" in ExcelParser.java and initialize it in method parse
-- create entity-class for activities
 - test variable previousDay
 - skip empty daily activities
-- make a check for empty cells(0,2,5)
+- get rid of repeatable code
 - check todo's

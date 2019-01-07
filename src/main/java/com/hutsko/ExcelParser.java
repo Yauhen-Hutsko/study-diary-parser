@@ -20,6 +20,9 @@ public class ExcelParser {
     public static final String ROW_NAME = "программирование";
     private static final String PATH_FILE = "src/main/resources/ItLearnTimeWasted.xlsx";
     private static final String SHEET_NAME = "Schedule";
+    private static final int DATE_CELL_NUMBER = 0;
+    private static final int ACTIVITY_CELL_NUMBER = 2;
+    private static final int TIME_CELL_NUMBER = 5;
 
     private String pathFile;
 
@@ -63,11 +66,6 @@ public class ExcelParser {
             while (cellIterator.hasNext()) {
                 processCell(cellIterator, currentLine);
             }
-
-//            result.append("\n");
-//            if (row.getCell(2).equals(ROW_NAME)) {
-//                System.out.println(row.getCell(0));
-//            }
         }
         return rows;
     }
@@ -87,9 +85,10 @@ public class ExcelParser {
 //1. read cells and process them
 //2. populate entities with data from the cells.
 
-            previousDay = currentRow.getCell(0) != null ? parseDate(currentRow.getCell(0).toString()) : previousDay;
+            previousDay = currentRow.getCell(DATE_CELL_NUMBER) != null ?
+                    parseDate(currentRow.getCell(DATE_CELL_NUMBER).toString()) : previousDay;
 
-            if (currentRow.getCell(1) != null) {
+            if (currentRow.getCell(DATE_CELL_NUMBER) != null) {
                 activities.clear();
             }
             activities.add(currentRow);
@@ -157,13 +156,12 @@ public class ExcelParser {
     }
 
     public Activity getActivity(Row row) {
-        String name = row.getCell(2).getStringCellValue();
+        String name = row.getCell(ACTIVITY_CELL_NUMBER).getStringCellValue();
 
         //this check will throw an exception in case of unknown activity
         ActivityType.forString(name);
 
-        Duration time = parseDuration( prepareTimeFormat(row.getCell(5).getStringCellValue()) );
-
+        Duration time = parseDuration( prepareTimeFormat(row.getCell(TIME_CELL_NUMBER).getStringCellValue()) );
         return new Activity(name, time);
     }
 }
