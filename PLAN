@@ -13,4 +13,5 @@
 - create entity-class for activities
 - test variable previousDay
 - skip empty daily activities
+- make a check for empty cells(0,2,5)
 - check todo's

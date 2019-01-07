@@ -1,5 +1,6 @@
 package com.hutsko;
 
+import com.hutsko.entity.Activity;
 import com.hutsko.entity.Duration;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -109,8 +110,8 @@ class ExcelParserTest {
                 "1ч15м", "1час15минут", "1 ч 15 м", "2 часа 15 мин", "5часов 15минут");
 
         List<String> expectedList = Arrays.asList(
-                "10m", "10m", "10m", "20m", "20m", "20m",
-                "1h", "2h", "5h", "1h", "2h", "5h",
+                "0h10m", "0h10m", "0h10m", "0h20m", "0h20m", "0h20m",
+                "1h0m", "2h0m", "5h0m", "1h0m", "2h0m", "5h0m",
                 "1h15m", "1h15m", "1h15m", "2h15m", "5h15m");
         List<String> actualList = ruList.stream().map(s -> excelParser.prepareTimeFormat(s)).collect(Collectors.toList());
         ruList.forEach(s -> excelParser.prepareTimeFormat(s));
@@ -124,8 +125,8 @@ class ExcelParserTest {
                 "1h", "2hours", "5hours", "1 hour", "2 hours",
                 "1h15m", "1hour15minutes", "1 h 15 m", "2 hours 15 min", "5hours 15minutes");
         List<String> expectedList = Arrays.asList(
-                "10m", "10m", "10m", "10m", "20m", "20m", "20m", "20m",
-                "1h", "2h", "5h", "1h", "2h",
+                "0h10m", "0h10m", "0h10m", "0h10m", "0h20m", "0h20m", "0h20m", "0h20m",
+                "1h0m", "2h0m", "5h0m", "1h0m", "2h0m",
                 "1h15m", "1h15m", "1h15m", "2h15m", "5h15m");
         List<String> actualList = engList.stream().map(s -> excelParser.prepareTimeFormat(s)).collect(Collectors.toList());
         engList.forEach(s -> excelParser.prepareTimeFormat(s));
@@ -146,6 +147,21 @@ class ExcelParserTest {
         assertEquals(new Duration(12, 5), one.add(three));
         assertEquals(new Duration(16, 25), three.add(four));
     }
+    @Test
+    public void testGetActivityFromRow(){
+        Row row = excelParser.getRows(sheet).get(0);
+        Row row5 = excelParser.getRows(sheet).get(5);
+        Row row6 = excelParser.getRows(sheet).get(6);
+        Activity activity = excelParser.getActivity(row);
+        assertNotNull(activity);
 
+        Activity activity5 = excelParser.getActivity(row5);
+        assertEquals("гитара", activity5.getName() );
+        assertEquals(new Duration(0, 30), activity5.getDuration());
+
+        Activity activity6 = excelParser.getActivity(row6);
+        assertEquals("программирование", activity6.getName() );
+        assertEquals(new Duration(4, 20), activity6.getDuration());
+    }
 
 }

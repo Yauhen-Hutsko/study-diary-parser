@@ -1,9 +1,9 @@
 package com.hutsko;
 
+import com.hutsko.entity.Activity;
+import com.hutsko.entity.ActivityType;
 import com.hutsko.entity.Duration;
-import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.FileInputStream;
@@ -73,9 +73,10 @@ public class ExcelParser {
     }
 
     /**
+     * This is a main method which return data prepared for UI.
      * Some days contain multi-tuple of activities. Therefore "unique days" ≤ "max lines"
      *
-     * @return HashMap where key - string of day, value - list of tuples.
+     * @return HashMap where key - day, value - list of activities.
      */
     Map<LocalDate, List<Row>> getAllDays(List<Row> rowList) {
         LocalDate previousDay = LocalDate.now();
@@ -127,12 +128,18 @@ public class ExcelParser {
         // change data format like "{"1час 15 мин"} -> "1h15m"
         duration = duration.replaceAll(minutePatternEng, "m");
         duration = duration.replaceAll(hourPatternEng, "h");
+        if (!duration.contains("h")) {
+            duration = "0h" + duration;
+        }
+        if (!duration.contains("m")) {
+            duration = duration + "0m";
+        }
         return duration;
     }
 
     Duration parseDuration(String dur) {
         //check for correct input format like "XXhYYm"
-        if (!dur.matches("\\d{1,2}h[0-6]?\\d{1}m")) {
+        if (!dur.matches("\\d{1,2}h[0-5]?\\d{1}m")) {
             throw new IllegalArgumentException("Wrong input string format: " + dur);
         }
 
@@ -144,8 +151,19 @@ public class ExcelParser {
         Matcher minuteMatcher = minutePattern.matcher(dur);
 
         int hour = (hourMatcher.find()) ? Integer.parseInt(dur.substring(hourMatcher.start(), hourMatcher.end())) : 0;
-        int minute = (minuteMatcher.find()) ? Integer.parseInt(dur.substring(minuteMatcher.start(),minuteMatcher.end())) : 0;
+        int minute = (minuteMatcher.find()) ? Integer.parseInt(dur.substring(minuteMatcher.start(), minuteMatcher.end())) : 0;
 
         return new Duration(hour, minute);
+    }
+
+    public Activity getActivity(Row row) {
+        String name = row.getCell(2).getStringCellValue();
+
+        //this check will throw an exception in case of unknown activity
+        ActivityType.forString(name);
+
+        Duration time = parseDuration( prepareTimeFormat(row.getCell(5).getStringCellValue()) );
+
+        return new Activity(name, time);
     }
 }
